@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     public CharacterController controller;
     public float playerSpeed = 12f;
     Animator animator;
+    public Transform gunFirePoint;
 
     // Start is called before the first frame update
     void Start()
@@ -25,7 +27,26 @@ public class PlayerMovement : MonoBehaviour
         {
             PlayerRun(xInput, zInput);
         }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            CheckEnemyGotHit();
+        }
     }
+
+    private void CheckEnemyGotHit()
+    {
+        RaycastHit hitInfo;
+        if (Physics.Raycast(gunFirePoint.position, gunFirePoint.forward, out hitInfo, 100f))
+        {
+            GameObject hitEnemy = hitInfo.collider.gameObject;
+            if (hitEnemy.tag == "Enemy")
+            {
+                Destroy(hitEnemy);
+            }
+        }
+    }
+
 
     private void PlayerRun(float xInput, float zInput)
     {
