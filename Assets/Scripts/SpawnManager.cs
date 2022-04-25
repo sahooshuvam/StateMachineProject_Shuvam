@@ -19,7 +19,10 @@ public class SpawnManager : MonoBehaviour
         if (time > 3f)
         {
             GameObject enemyFromPool = ObjectPoolScripts.Instance.GetObjectsFromPool("Enemy");
-            enemyFromPool.SetActive(true);
+            if (enemyFromPool != null)
+            {
+                enemyFromPool.SetActive(true);
+            }
             time = 0f;
         }
     }

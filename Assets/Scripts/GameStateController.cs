@@ -9,10 +9,15 @@ public class GameStateController : MonoBehaviour
     Animator animator;
     public Transform player;
     State currentState;
+    public float time = 0f;
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        if(player==null)
+        {
+            player = GameObject.Find("Player").GetComponent<Transform>();
+        }
         currentState = new Idle(this.gameObject, agent, animator, player);
     }
 
@@ -60,7 +65,7 @@ public class State
     {
         if (eventStage == EVENTS.ENTER)
         {
-            EnterMethod();
+            UpdateMethod();
         }
         if (eventStage == EVENTS.UPDATE)
         {
@@ -75,18 +80,21 @@ public class State
     }
     public bool CanSeePlayer()
     {
-        Vector3 direction = playerPosition.position - npc.transform.position;
-        float angle = Vector3.Angle(direction, npc.transform.forward);
-        if (direction.magnitude < visualDistance && angle < visualAngle)
-        {
+         Vector3 direction = playerPosition.position - npc.transform.position;
+          float angle = Vector3.Angle(direction, npc.transform.forward);
+          if (direction.magnitude < visualDistance && angle < visualAngle)
+          {
+              return true;
+          }
+        if (Vector3.Distance(playerPosition.position, npc.transform.position) < 10f)
             return true;
-        }
         return false;
     }
     public bool EnemyCanAttackPlayer()
     {
-        Vector3 direction = playerPosition.position - npc.transform.position;
-        if (direction.magnitude < shootingDistance)
+        //Vector3 direction = playerPosition.position - npc.transform.position;
+        float direction = Vector3.Distance(playerPosition.position, npc.transform.position);
+        if (direction <= shootingDistance)
         {
             return true;
         }
@@ -111,13 +119,14 @@ public class Idle : State
         if (CanSeePlayer())
         {
             nextState = new Chase(npc, animator, agent, playerPosition);
+            //Debug.Log("Going to Chase State");
             eventStage = EVENTS.EXIT;
         }
-        else if (Random.Range(0, 100) < 10)
+        /*else if (Random.Range(0, 100) < 10)
         {
             nextState = new Patrol(npc, animator, agent, playerPosition);
             eventStage = EVENTS.EXIT;
-        }
+        }*/
         //base.UpdateMethod();
 
     }
@@ -166,18 +175,25 @@ public class Chase : State
     {
         stateName = STATE.CHASE;
         agent.speed = 5f;
-        agent.isStopped = false;
+        agent.stoppingDistance = 5f;
+        //agent.isStopped = false;
     }
     public override void EnterMethod()
     {
         animator.SetTrigger("isRunning");
+        
         base.EnterMethod();
 
     }
     public override void UpdateMethod()
     {
         agent.SetDestination(playerPosition.position);
-        if (agent.hasPath)
+        if(EnemyCanAttackPlayer())
+        {
+            nextState = new Attack(npc, animator, agent, playerPosition);
+            eventStage = EVENTS.EXIT;
+        }
+       /*if (agent.hasPath)
         {
             if (EnemyCanAttackPlayer())
             {
@@ -189,11 +205,11 @@ public class Chase : State
                 nextState = new Patrol(npc, animator, agent, playerPosition);
                 eventStage = EVENTS.EXIT;
             }
-        }
+        }*/
     }
     public override void ExitMethod()
     {
-        animator.ResetTrigger("isRunning");
+       // animator.ResetTrigger("isRunning");
         base.ExitMethod();
     }
 }
@@ -207,7 +223,7 @@ public class Attack : State
     public override void EnterMethod()
     {
         animator.SetTrigger("isShooting");
-        agent.isStopped = true;
+        //agent.isStopped = true;
         base.EnterMethod();
 
     }
@@ -219,7 +235,7 @@ public class Attack : State
         npc.transform.rotation = Quaternion.Slerp(npc.transform.rotation, Quaternion.LookRotation(direction), rotationSpeed * Time.deltaTime);
         if (EnemyCanAttackPlayer())
         {
-            nextState = new Dead(npc, animator, agent, playerPosition);
+            nextState = new Idle(npc, agent,animator, playerPosition);
             eventStage = EVENTS.EXIT;
 
         }
