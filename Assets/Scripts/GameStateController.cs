@@ -223,24 +223,11 @@ public class Attack : State
             eventStage = EVENTS.EXIT;
 
         }
-        /* else if(!CanSeePlayer())
-         {
-             nextState=new Dead(npc, animator, agent,  playerPosition);
-             eventStage = EVENTS.EXIT;
-         }
-         else if(EnemyCanAttackPlayer())
-         {
-             nextState = new Dead(npc, animator, agent, playerPosition);
-             eventStage = EVENTS.EXIT;
-         }*/
-
-
     }
     public override void ExitMethod()
     {
         animator.ResetTrigger("isShooting");
-        //nextState = new Dead(npc, animator, agent, playerPosition);
-        base.ExitMethod();
+            base.ExitMethod();
     }
 }
 public class Dead : State
