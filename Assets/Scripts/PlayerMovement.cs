@@ -23,7 +23,6 @@ public class PlayerMovement : MonoBehaviour
         float zInput = Input.GetAxis("Vertical");
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
         {
-            animator.SetTrigger("isRunning");
             PlayerRun(xInput, zInput);
         }
     }
