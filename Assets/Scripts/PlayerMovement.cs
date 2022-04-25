@@ -42,7 +42,7 @@ public class PlayerMovement : MonoBehaviour
             GameObject hitEnemy = hitInfo.collider.gameObject;
             if (hitEnemy.tag == "Enemy")
             {
-                Destroy(hitEnemy);
+                hitEnemy.SetActive(false);
             }
         }
     }
