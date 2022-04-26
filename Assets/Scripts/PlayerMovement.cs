@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     Animator animator;
     public Transform gunFirePoint;
     [SerializeField] private GameObject bloopPS;
+    [SerializeField] private ParticleSystem smokeParticle;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+            smokeParticle.Play();
             CheckEnemyGotHit();
         }
     }
