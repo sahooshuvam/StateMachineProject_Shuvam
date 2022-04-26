@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     public float playerSpeed = 12f;
     Animator animator;
     public Transform gunFirePoint;
+    [SerializeField] private GameObject bloopPS;
 
     // Start is called before the first frame update
     void Start()
@@ -42,11 +43,17 @@ public class PlayerMovement : MonoBehaviour
             GameObject hitEnemy = hitInfo.collider.gameObject;
             if (hitEnemy.tag == "Enemy")
             {
+                GetBloodParticle(hitInfo.point);
                 hitEnemy.SetActive(false);
             }
         }
     }
 
+    private void GetBloodParticle(Vector3 position)
+    {
+        Instantiate(bloopPS, position, Quaternion.identity);
+        
+    }
 
     private void PlayerRun(float xInput, float zInput)
     {
